@@ -3,21 +3,21 @@
   "short_name": "Bolsita",
   "description": "Локальный список покупок с голосовым вводом",
   "lang": "ru",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/bolsita/",
+  "scope": "/bolsita/",
   "display": "standalone",
   "background_color": "#f5fbf8",
   "theme_color": "#f5fbf8",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "/bolsita/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/bolsita/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

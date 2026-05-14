@@ -324,7 +324,9 @@ function registerServiceWorker(): void {
     return;
   }
 
-  navigator.serviceWorker.register('/sw.js').catch(() => {
+  const serviceWorkerUrl = new URL(`${import.meta.env.BASE_URL}sw.js`, window.location.origin);
+
+  navigator.serviceWorker.register(serviceWorkerUrl, { scope: import.meta.env.BASE_URL }).catch(() => {
     voiceStatus = 'Офлайн-режим подключится позже';
     render();
   });

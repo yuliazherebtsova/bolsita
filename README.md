@@ -18,6 +18,14 @@ npm run build
 npm run preview
 ```
 
+## GitHub Pages
+
+Production URL после деплоя:
+
+https://yuliazherebtsova.github.io/bolsita/
+
+В настройках репозитория GitHub Pages должен быть выбран источник `GitHub Actions`.
+
 Голосовые команды v1:
 
 - `добавь хлеб`
