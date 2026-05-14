@@ -76,55 +76,22 @@ svg {
 
 .app-header {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  padding: calc(22px + env(safe-area-inset-top)) 18px 18px;
-}
-
-.eyebrow {
-  margin: 0 0 3px;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 700;
+  align-items: center;
+  padding: calc(28px + env(safe-area-inset-top)) 18px 18px;
 }
 
 h1 {
   margin: 0;
-  font-size: 34px;
+  font-size: 36px;
   line-height: 1;
   letter-spacing: 0;
-}
-
-.counter {
-  min-width: 86px;
-  padding: 10px 12px;
-  border: 1px solid rgba(8, 145, 178, 0.18);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.72);
-  color: var(--muted);
-  text-align: right;
-}
-
-.counter strong {
-  display: block;
-  color: var(--cyan);
-  font-size: 24px;
-  line-height: 1;
-}
-
-.counter span {
-  display: block;
-  margin-top: 2px;
-  font-size: 12px;
-  font-weight: 700;
 }
 
 .shopping-area {
   position: relative;
   flex: 1;
   min-height: 0;
-  padding: 4px 14px 162px;
+  padding: 4px 14px 194px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -287,10 +254,10 @@ h1 {
   left: max(0px, calc((100vw - 430px) / 2));
   z-index: 10;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 66px;
-  gap: 10px;
-  align-items: center;
-  padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+  grid-template-columns: minmax(0, 1fr);
+  gap: 9px;
+  justify-items: center;
+  padding: 12px 14px calc(14px + env(safe-area-inset-bottom));
   border-top: 1px solid rgba(23, 49, 43, 0.08);
   background: rgba(248, 255, 252, 0.92);
   box-shadow: 0 -18px 34px rgba(29, 65, 57, 0.1);
@@ -301,9 +268,10 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 48px;
   align-items: center;
+  width: 100%;
   min-height: 56px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 999px;
   background: var(--surface);
   box-shadow: 0 8px 18px rgba(28, 64, 55, 0.06);
 }
@@ -312,7 +280,7 @@ h1 {
   min-width: 0;
   height: 54px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 999px;
   background: transparent;
   padding: 0 2px 0 16px;
   color: var(--text);
@@ -326,6 +294,8 @@ h1 {
 
 .add-button {
   justify-self: center;
+  width: 38px;
+  height: 38px;
   background: #e6f7f1;
   color: #147c42;
 }
@@ -337,8 +307,8 @@ h1 {
 .mic-button {
   display: grid;
   place-items: center;
-  width: 62px;
-  height: 62px;
+  width: 68px;
+  height: 68px;
   border: 0;
   border-radius: 50%;
   background: var(--cyan);
@@ -371,13 +341,14 @@ h1 {
 }
 
 .voice-status {
-  grid-column: 1 / -1;
   min-height: 18px;
-  margin: -2px 4px 0;
+  width: 100%;
+  margin: -1px 4px 0;
   color: var(--muted);
   font-size: 13px;
   font-weight: 700;
   line-height: 1.2;
+  text-align: center;
 }
 
 .visually-hidden {

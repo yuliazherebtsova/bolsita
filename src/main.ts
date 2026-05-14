@@ -61,14 +61,7 @@ let recognition: SpeechRecognitionInstance | null = null;
 app.innerHTML = `
   <div class="app-shell">
     <header class="app-header">
-      <div>
-        <p class="eyebrow">Сегодня</p>
-        <h1>Bolsita</h1>
-      </div>
-      <div class="counter" aria-live="polite">
-        <strong data-active-count>0</strong>
-        <span data-active-label>активных</span>
-      </div>
+      <h1>Bolsita</h1>
     </header>
 
     <main class="shopping-area">
@@ -96,8 +89,6 @@ app.innerHTML = `
 `;
 
 const itemList = requireElement<HTMLUListElement>('[data-items]');
-const activeCount = requireElement<HTMLElement>('[data-active-count]');
-const activeLabel = requireElement<HTMLElement>('[data-active-label]');
 const emptyState = requireElement<HTMLElement>('[data-empty-state]');
 const addForm = requireElement<HTMLFormElement>('[data-add-form]');
 const itemInput = requireElement<HTMLInputElement>('[data-item-input]');
@@ -189,10 +180,7 @@ function persistAndRender(): void {
 
 function render(): void {
   const sortedItems = sortItems(items);
-  const activeItems = items.filter((item) => !item.checked).length;
 
-  activeCount.textContent = String(activeItems);
-  activeLabel.textContent = pluralizeItems(activeItems);
   emptyState.hidden = sortedItems.length > 0;
   voiceStatusElement.textContent = voiceStatus;
   micButton.classList.toggle('is-listening', isListening);
@@ -333,21 +321,6 @@ function registerServiceWorker(): void {
     voiceStatus = 'Офлайн-режим подключится позже';
     render();
   });
-}
-
-function pluralizeItems(count: number): string {
-  const mod10 = count % 10;
-  const mod100 = count % 100;
-
-  if (mod10 === 1 && mod100 !== 11) {
-    return 'активный';
-  }
-
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
-    return 'активных';
-  }
-
-  return 'активных';
 }
 
 function escapeHtml(value: string): string {
