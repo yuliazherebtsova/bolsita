@@ -37,7 +37,8 @@ body {
 }
 
 button,
-input {
+input,
+[contenteditable="true"] {
   font: inherit;
 }
 
@@ -75,9 +76,9 @@ svg {
 }
 
 .app-header {
-  display: flex;
-  align-items: center;
-  padding: calc(28px + env(safe-area-inset-top)) 18px 18px;
+  display: grid;
+  gap: 18px;
+  padding: calc(28px + env(safe-area-inset-top)) 18px 16px;
 }
 
 h1 {
@@ -91,7 +92,7 @@ h1 {
   position: relative;
   flex: 1;
   min-height: 0;
-  padding: 4px 14px 194px;
+  padding: 4px 14px 116px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -185,7 +186,7 @@ h1 {
 .check-control input:focus-visible + span,
 .icon-button:focus-visible,
 .mic-button:focus-visible,
-.add-form input:focus-visible {
+.item-editor:focus-visible {
   outline: 3px solid rgba(8, 145, 178, 0.34);
   outline-offset: 3px;
 }
@@ -255,9 +256,9 @@ h1 {
   z-index: 10;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 9px;
+  gap: 8px;
   justify-items: center;
-  padding: 12px 14px calc(14px + env(safe-area-inset-bottom));
+  padding: 10px 14px calc(14px + env(safe-area-inset-bottom));
   border-top: 1px solid rgba(23, 49, 43, 0.08);
   background: rgba(248, 255, 252, 0.92);
   box-shadow: 0 -18px 34px rgba(29, 65, 57, 0.1);
@@ -269,27 +270,36 @@ h1 {
   grid-template-columns: minmax(0, 1fr) 48px;
   align-items: center;
   width: 100%;
-  min-height: 56px;
+  min-height: 58px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 8px;
   background: var(--surface);
   box-shadow: 0 8px 18px rgba(28, 64, 55, 0.06);
 }
 
-.add-form input {
+.item-editor {
   min-width: 0;
-  height: 54px;
+  min-height: 56px;
+  max-height: 112px;
+  overflow-y: auto;
   border: 0;
-  border-radius: 999px;
+  border-radius: 8px;
   background: transparent;
-  padding: 0 2px 0 16px;
+  padding: 17px 2px 15px 16px;
   color: var(--text);
   font-size: 17px;
+  font-weight: 720;
+  line-height: 1.35;
   outline: none;
+  overflow-wrap: anywhere;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
-.add-form input::placeholder {
+.item-editor:empty::before {
+  content: attr(data-placeholder);
   color: #7a918a;
+  font-weight: 650;
 }
 
 .add-button {

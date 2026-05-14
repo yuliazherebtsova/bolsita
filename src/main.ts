@@ -62,6 +62,19 @@ app.innerHTML = `
   <div class="app-shell">
     <header class="app-header">
       <h1>Bolsita</h1>
+      <form class="add-form" data-add-form aria-label="Добавление товара">
+        <div
+          class="item-editor"
+          contenteditable="true"
+          role="textbox"
+          aria-label="Новый товар"
+          data-placeholder="Новый товар"
+          data-item-editor
+        ></div>
+        <button class="icon-button add-button" type="submit" aria-label="Добавить товар" title="Добавить">
+          ${plusIcon()}
+        </button>
+      </form>
     </header>
 
     <main class="shopping-area">
@@ -72,14 +85,7 @@ app.innerHTML = `
       </div>
     </main>
 
-    <section class="composer" aria-label="Добавление товара">
-      <form class="add-form" data-add-form>
-        <label class="visually-hidden" for="new-item">Новый товар</label>
-        <input id="new-item" name="item" type="text" autocomplete="off" placeholder="Новый товар" data-item-input />
-        <button class="icon-button add-button" type="submit" aria-label="Добавить товар" title="Добавить">
-          ${plusIcon()}
-        </button>
-      </form>
+    <section class="composer" aria-label="Голосовой ввод">
       <button class="mic-button" type="button" data-mic-button aria-label="Голосовой ввод" title="Голосовой ввод">
         ${micIcon()}
       </button>
@@ -91,15 +97,29 @@ app.innerHTML = `
 const itemList = requireElement<HTMLUListElement>('[data-items]');
 const emptyState = requireElement<HTMLElement>('[data-empty-state]');
 const addForm = requireElement<HTMLFormElement>('[data-add-form]');
-const itemInput = requireElement<HTMLInputElement>('[data-item-input]');
+const itemEditor = requireElement<HTMLDivElement>('[data-item-editor]');
 const micButton = requireElement<HTMLButtonElement>('[data-mic-button]');
 const voiceStatusElement = requireElement<HTMLElement>('[data-voice-status]');
 
 addForm.addEventListener('submit', (event) => {
   event.preventDefault();
-  addFromText(itemInput.value);
-  itemInput.value = '';
-  itemInput.focus();
+  addFromText(itemEditor.textContent ?? '');
+  itemEditor.textContent = '';
+  itemEditor.focus();
+});
+
+itemEditor.addEventListener('keydown', (event) => {
+  if (event.key !== 'Enter') {
+    return;
+  }
+
+  event.preventDefault();
+  addForm.requestSubmit();
+});
+
+itemEditor.addEventListener('paste', (event) => {
+  event.preventDefault();
+  insertPlainText(event.clipboardData?.getData('text/plain') ?? '');
 });
 
 itemList.addEventListener('change', (event) => {
@@ -158,7 +178,7 @@ function addFromText(rawName: string): void {
   items = addItem(items, name);
   const target = items.find((item) => normalizeItemName(item.name) === name);
   highlightedId = target?.id ?? null;
-  voiceStatus = `Добавлено: ${name}`;
+  voiceStatus = 'Готово';
   persistAndRender();
   clearHighlightSoon();
 }
@@ -176,6 +196,22 @@ function requireElement<TElement extends Element>(selector: string): TElement {
 function persistAndRender(): void {
   saveItems(window.localStorage, items);
   render();
+}
+
+function insertPlainText(text: string): void {
+  const selection = window.getSelection();
+
+  if (!selection || selection.rangeCount === 0) {
+    itemEditor.textContent = `${itemEditor.textContent ?? ''}${text}`;
+    return;
+  }
+
+  const range = selection.getRangeAt(0);
+  range.deleteContents();
+  range.insertNode(document.createTextNode(text));
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
 }
 
 function render(): void {
