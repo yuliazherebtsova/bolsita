@@ -11,26 +11,10 @@ import {
   toggleItem,
   type ShoppingItem,
 } from './items';
+import { completeRecognitionResult, type SpeechRecognitionResultListLike } from './speech';
 import { parseVoiceCommand } from './voice';
 
 type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
-
-interface SpeechRecognitionAlternativeLike {
-  transcript: string;
-}
-
-interface SpeechRecognitionResultLike {
-  readonly isFinal: boolean;
-  readonly length: number;
-  item(index: number): SpeechRecognitionAlternativeLike;
-  [index: number]: SpeechRecognitionAlternativeLike;
-}
-
-interface SpeechRecognitionResultListLike {
-  readonly length: number;
-  item(index: number): SpeechRecognitionResultLike;
-  [index: number]: SpeechRecognitionResultLike;
-}
 
 interface SpeechRecognitionEventLike extends Event {
   readonly results: SpeechRecognitionResultListLike;
@@ -271,8 +255,10 @@ function setupSpeechRecognition(): void {
   };
 
   recognition.onresult = (event) => {
-    const transcript = getTranscript(event.results);
-    handleVoiceTranscript(transcript);
+    completeRecognitionResult(event.results, {
+      handleTranscript: handleVoiceTranscript,
+      stopRecognition: stopListening,
+    });
   };
 }
 
@@ -298,21 +284,6 @@ function handleVoiceTranscript(transcript: string): void {
   render();
 }
 
-function getTranscript(results: SpeechRecognitionResultListLike): string {
-  const transcriptParts: string[] = [];
-
-  for (let index = 0; index < results.length; index += 1) {
-    const result = results[index];
-    const alternative = result?.[0]?.transcript;
-
-    if (alternative) {
-      transcriptParts.push(alternative);
-    }
-  }
-
-  return transcriptParts.join(' ').trim();
-}
-
 function speechErrorMessage(error: string): string {
   if (error === 'not-allowed' || error === 'service-not-allowed') {
     return 'Разрешите микрофон';
@@ -327,6 +298,21 @@ function speechErrorMessage(error: string): string {
   }
 
   return 'Не удалось распознать';
+}
+
+function stopListening(): void {
+  if (!recognition) {
+    return;
+  }
+
+  try {
+    recognition.stop();
+  } catch {
+    // Some WebKit builds throw if recognition already stopped after a final result.
+  }
+
+  isListening = false;
+  render();
 }
 
 function clearHighlightSoon(): void {

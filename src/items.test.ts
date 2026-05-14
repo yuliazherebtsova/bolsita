@@ -5,6 +5,7 @@ import {
   loadItems,
   removeItemByName,
   saveItems,
+  sortItems,
   toggleItem,
   type ShoppingItem,
 } from './items';
@@ -45,6 +46,18 @@ describe('shopping item operations', () => {
     const result = toggleItem([existingItem()], 'item-1');
 
     expect(result[0].checked).toBe(true);
+  });
+
+  it('keeps item order when checked state changes', () => {
+    const items = [
+      existingItem({ id: 'item-1', name: 'Хлеб', createdAt: 1000 }),
+      existingItem({ id: 'item-2', name: 'Молоко', createdAt: 2000 }),
+      existingItem({ id: 'item-3', name: 'Сыр', createdAt: 3000 }),
+    ];
+
+    const checkedItems = toggleItem(items, 'item-1');
+
+    expect(sortItems(checkedItems).map((item) => item.id)).toEqual(['item-1', 'item-2', 'item-3']);
   });
 
   it('removes the closest item by normalized name', () => {

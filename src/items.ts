@@ -108,13 +108,7 @@ export function loadItems(storage: StorageAdapter): ShoppingItem[] {
 }
 
 export function sortItems(items: ShoppingItem[]): ShoppingItem[] {
-  return [...items].sort((a, b) => {
-    if (a.checked !== b.checked) {
-      return a.checked ? 1 : -1;
-    }
-
-    return a.createdAt - b.createdAt;
-  });
+  return [...items];
 }
 
 export function normalizeItemName(value: string): string {
