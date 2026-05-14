@@ -271,12 +271,13 @@ function setupSpeechRecognition(): void {
   };
 
   recognition.onresult = (event) => {
-    const transcript = event.results[0]?.[0]?.transcript ?? '';
+    const transcript = getTranscript(event.results);
     handleVoiceTranscript(transcript);
   };
 }
 
 function handleVoiceTranscript(transcript: string): void {
+  const heardText = normalizeItemName(transcript);
   const command = parseVoiceCommand(transcript);
 
   if (command.type === 'add') {
@@ -287,13 +288,29 @@ function handleVoiceTranscript(transcript: string): void {
   if (command.type === 'remove') {
     const beforeLength = items.length;
     items = removeItemByName(items, command.itemName);
-    voiceStatus = items.length < beforeLength ? `Удалено: ${command.itemName}` : `Не найдено: ${command.itemName}`;
+    voiceStatus =
+      items.length < beforeLength ? `Удалено: ${command.itemName}` : `Не найдено: ${command.itemName}. Услышала: ${heardText || transcript}`;
     persistAndRender();
     return;
   }
 
-  voiceStatus = 'Команда не распознана';
+  voiceStatus = heardText ? `Не поняла: ${heardText}` : 'Речь не распознана';
   render();
+}
+
+function getTranscript(results: SpeechRecognitionResultListLike): string {
+  const transcriptParts: string[] = [];
+
+  for (let index = 0; index < results.length; index += 1) {
+    const result = results[index];
+    const alternative = result?.[0]?.transcript;
+
+    if (alternative) {
+      transcriptParts.push(alternative);
+    }
+  }
+
+  return transcriptParts.join(' ').trim();
 }
 
 function speechErrorMessage(error: string): string {

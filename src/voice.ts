@@ -12,17 +12,17 @@ export type VoiceCommand =
     };
 
 export function parseVoiceCommand(transcript: string): VoiceCommand {
-  const normalized = normalizeTranscript(transcript);
+  const normalized = cleanupItemName(transcript);
 
   if (!normalized) {
     return { type: 'unknown' };
   }
 
-  const addMatch = normalized.match(/^(?:добавь|добавить)(?:\s+в\s+список)?\s+(.+)$/u);
+  const addMatch = normalized.match(/^(?:добавь|добавить|купи|купить)(?:\s+в\s+список)?\s+(.+)$/u);
   if (addMatch?.[1]) {
     return {
       type: 'add',
-      itemName: addMatch[1].trim(),
+      itemName: cleanupItemName(addMatch[1]),
     };
   }
 
@@ -30,17 +30,29 @@ export function parseVoiceCommand(transcript: string): VoiceCommand {
   if (removeMatch?.[1]) {
     return {
       type: 'remove',
-      itemName: removeMatch[1].trim(),
+      itemName: cleanupItemName(removeMatch[1]),
     };
   }
 
-  return { type: 'unknown' };
+  if (looksLikeUnsupportedCommand(normalized)) {
+    return { type: 'unknown' };
+  }
+
+  return {
+    type: 'add',
+    itemName: cleanupItemName(normalized),
+  };
 }
 
-function normalizeTranscript(value: string): string {
+function cleanupItemName(value: string): string {
   return value
     .toLocaleLowerCase('ru-RU')
     .replace(/[.,!?;:()[\]{}"'«»]/g, ' ')
+    .replace(/(^|\s)пожалуйста(?=\s|$)/gu, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function looksLikeUnsupportedCommand(value: string): boolean {
+  return /^(?:что|как|где|когда|почему|зачем|покажи|открой|очисти|сбрось)(?:\s|$)/u.test(value);
 }
