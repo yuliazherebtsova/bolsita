@@ -25,11 +25,21 @@ describe('parseVoiceCommand', () => {
     });
   });
 
-  it('parses add-to-list commands and normalizes punctuation and casing', () => {
+  it('strips the command and speech punctuation without changing item casing', () => {
     expect(parseVoiceCommand('Добавь в список Сыр!')).toEqual({
       type: 'add',
-      itemName: 'сыр',
+      itemName: 'Сыр',
     });
+  });
+
+  it.each(['Coca-Cola ZERO', 'Молоко 3,2% (1 л)', "M&M's"])('preserves product punctuation: %s', (name) => {
+    expect(parseVoiceCommand(`ДОБАВЬ ${name}`)).toEqual({ type: 'add', itemName: name });
+  });
+
+  it('handles polite speech punctuation without altering the product', () => {
+    expect(parseVoiceCommand('Добавь, пожалуйста, Молоко 3,2%.')).toEqual({ type: 'add', itemName: 'Молоко 3,2%' });
+    expect(parseVoiceCommand('УБЕРИ Coca-Cola ZERO')).toEqual({ type: 'remove', itemName: 'Coca-Cola ZERO' });
+    expect(parseVoiceCommand('Добавь пожалуйста')).toEqual({ type: 'unknown' });
   });
 
   it('treats a bare recognized item as an add command', () => {

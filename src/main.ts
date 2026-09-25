@@ -66,6 +66,8 @@ app.innerHTML = `
         <div
           class="item-editor"
           contenteditable="true"
+          autocapitalize="off"
+          autocorrect="off"
           role="textbox"
           aria-label="Новый товар"
           data-placeholder="Новый товар"
@@ -167,7 +169,7 @@ registerServiceWorker();
 render();
 
 function addFromText(rawName: string): void {
-  const name = normalizeItemName(rawName);
+  const name = rawName.trim();
 
   if (!name) {
     voiceStatus = 'Введите товар';
@@ -176,7 +178,7 @@ function addFromText(rawName: string): void {
   }
 
   items = addItem(items, name);
-  const target = items.find((item) => normalizeItemName(item.name) === name);
+  const target = items.find((item) => normalizeItemName(item.name) === normalizeItemName(name));
   highlightedId = target?.id ?? null;
   voiceStatus = 'Готово';
   persistAndRender();
@@ -287,7 +289,7 @@ function setupSpeechRecognition(): void {
 }
 
 function handleVoiceTranscript(transcript: string): void {
-  const heardText = normalizeItemName(transcript);
+  const heardText = transcript.trim();
   const command = parseVoiceCommand(transcript);
 
   if (command.type === 'add') {
@@ -353,10 +355,20 @@ function registerServiceWorker(): void {
 
   const serviceWorkerUrl = new URL(`${import.meta.env.BASE_URL}sw.js`, window.location.origin);
 
-  navigator.serviceWorker.register(serviceWorkerUrl, { scope: import.meta.env.BASE_URL }).catch(() => {
-    voiceStatus = 'Офлайн-режим подключится позже';
-    render();
-  });
+  navigator.serviceWorker
+    .register(serviceWorkerUrl, { scope: import.meta.env.BASE_URL, updateViaCache: 'none' })
+    .then((registration) => {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          // Check on return from another app; offline failures leave the saved shell intact.
+          void registration.update().catch(() => {});
+        }
+      });
+    })
+    .catch(() => {
+      voiceStatus = 'Офлайн-режим подключится позже';
+      render();
+    });
 }
 
 function escapeHtml(value: string): string {

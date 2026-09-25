@@ -12,47 +12,40 @@ export type VoiceCommand =
     };
 
 export function parseVoiceCommand(transcript: string): VoiceCommand {
-  const normalized = cleanupItemName(transcript);
+  const text = cleanupItemName(transcript);
 
-  if (!normalized) {
+  if (!text) {
     return { type: 'unknown' };
   }
 
-  const addMatch = normalized.match(/^(?:добавь|добавить|купи|купить)(?:\s+в\s+список)?\s+(.+)$/u);
-  if (addMatch?.[1]) {
-    return {
-      type: 'add',
-      itemName: cleanupItemName(addMatch[1]),
-    };
+  const addMatch = text.match(/^(?:добавь|добавить|купи|купить)(?:\s+в\s+список)?(?:[\s,]+(.*))?$/iu);
+  if (addMatch) {
+    const itemName = cleanupItemName(addMatch[1] ?? '');
+    return itemName ? { type: 'add', itemName } : { type: 'unknown' };
   }
 
-  const removeMatch = normalized.match(/^(?:удали|удалить|убери|убрать)\s+(.+)$/u);
-  if (removeMatch?.[1]) {
-    return {
-      type: 'remove',
-      itemName: cleanupItemName(removeMatch[1]),
-    };
+  const removeMatch = text.match(/^(?:удали|удалить|убери|убрать)(?:[\s,]+(.*))?$/iu);
+  if (removeMatch) {
+    const itemName = cleanupItemName(removeMatch[1] ?? '');
+    return itemName ? { type: 'remove', itemName } : { type: 'unknown' };
   }
 
-  if (looksLikeUnsupportedCommand(normalized)) {
+  if (looksLikeUnsupportedCommand(text)) {
     return { type: 'unknown' };
   }
 
   return {
     type: 'add',
-    itemName: cleanupItemName(normalized),
+    itemName: text,
   };
 }
 
 function cleanupItemName(value: string): string {
   return value
-    .toLocaleLowerCase('ru-RU')
-    .replace(/[.,!?;:()[\]{}"'«»]/g, ' ')
-    .replace(/(^|\s)пожалуйста(?=\s|$)/gu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+    .replace(/(^|[\s,]+)пожалуйста(?=[\s,.!?;:]|$)[\s,]*/giu, ' ')
+    .replace(/^[\s,.!?;:]+|[\s,.!?;:]+$/gu, '');
 }
 
 function looksLikeUnsupportedCommand(value: string): boolean {
-  return /^(?:что|как|где|когда|почему|зачем|покажи|открой|очисти|сбрось)(?:\s|$)/u.test(value);
+  return /^(?:что|как|где|когда|почему|зачем|покажи|открой|очисти|сбрось)(?:\s|$)/iu.test(value);
 }

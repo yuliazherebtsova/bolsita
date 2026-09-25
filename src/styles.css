@@ -93,6 +93,7 @@ svg {
 
 .app-header {
   display: grid;
+  flex-shrink: 0;
   gap: 18px;
   padding: calc(28px + env(safe-area-inset-top)) 18px 16px;
 }
@@ -108,7 +109,7 @@ h1 {
   position: relative;
   flex: 1;
   min-height: 0;
-  padding: 4px 14px 116px;
+  padding: 4px 14px 18px;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
@@ -152,6 +153,7 @@ h1 {
   min-width: 0;
   padding: 14px 4px;
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
   color: var(--text);
   font-size: 18px;
   font-weight: 720;
@@ -266,10 +268,8 @@ h1 {
 }
 
 .composer {
-  position: fixed;
-  right: max(0px, calc((100vw - 430px) / 2));
-  bottom: 0;
-  left: max(0px, calc((100vw - 430px) / 2));
+  position: relative;
+  flex-shrink: 0;
   z-index: 10;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -375,6 +375,7 @@ h1 {
   font-size: 13px;
   font-weight: 700;
   line-height: 1.2;
+  overflow-wrap: anywhere;
   text-align: center;
 }
 
@@ -403,14 +404,6 @@ h1 {
     border: 1px solid rgba(23, 49, 43, 0.08);
     border-radius: 24px;
     box-shadow: var(--shadow);
-  }
-
-  .composer {
-    right: calc((100vw - 430px) / 2);
-    bottom: 24px;
-    left: calc((100vw - 430px) / 2);
-    border: 1px solid rgba(23, 49, 43, 0.08);
-    border-radius: 0 0 24px 24px;
   }
 }
 

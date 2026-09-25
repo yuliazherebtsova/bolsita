@@ -3,6 +3,7 @@
   "short_name": "Bolsita",
   "description": "Локальный список покупок с голосовым вводом",
   "lang": "ru",
+  "id": "/bolsita/",
   "start_url": "/bolsita/",
   "scope": "/bolsita/",
   "display": "standalone",

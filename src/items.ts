@@ -1,4 +1,6 @@
+// This is the data schema version, not the app release version.
 export const STORAGE_KEY = 'bolsita.items.v1';
+const itemCollator = new Intl.Collator('ru', { sensitivity: 'base', numeric: true });
 
 export interface ShoppingItem {
   id: string;
@@ -13,7 +15,7 @@ interface StorageAdapter {
 }
 
 export function addItem(items: ShoppingItem[], rawName: string): ShoppingItem[] {
-  const name = formatItemName(rawName);
+  const name = rawName.trim();
 
   if (!name) {
     return items;
@@ -108,7 +110,9 @@ export function loadItems(storage: StorageAdapter): ShoppingItem[] {
 }
 
 export function sortItems(items: ShoppingItem[]): ShoppingItem[] {
-  return [...items];
+  return [...items].sort(
+    (left, right) => Number(left.checked) - Number(right.checked) || itemCollator.compare(left.name, right.name),
+  );
 }
 
 export function normalizeItemName(value: string): string {
@@ -117,16 +121,6 @@ export function normalizeItemName(value: string): string {
     .replace(/[.,!?;:()[\]{}"'«»]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
-}
-
-function formatItemName(value: string): string {
-  const normalized = normalizeItemName(value);
-
-  if (!normalized) {
-    return '';
-  }
-
-  return `${normalized[0].toLocaleUpperCase('ru-RU')}${normalized.slice(1)}`;
 }
 
 function createItemId(): string {
